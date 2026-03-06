@@ -1,4 +1,7 @@
-// Using a direct web link instead of npm so it works on GitHub Pages without building!
+// 🚨 THESE TWO LINES FORCE MOBILE ERRORS TO POP UP ON SCREEN
+window.addEventListener("error", (e) => alert("Script Error: " + e.message));
+window.addEventListener("unhandledrejection", (e) => alert("CameraKit Error: " + (e.reason?.message || e.reason)));
+
 import { bootstrapCameraKit, createMediaStreamSource } from "https://esm.sh/@snap/camera-kit";
 
 let startButton, stopButton, shareButton, downloadButton, closeBtn;
@@ -9,7 +12,7 @@ async function main() {
     init();
 
     // 1. YOUR SNAP CREDENTIALS
-    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzU1NDI4MjMxLCJzdWIiOiI0YWMxZGI1YS02NGIyLTRkNjQtODVkMy0xNTM2ZjFhMzE0NDV-U1RBR0lOR34xZDUyNDhiYy0zZWYxLTRiZTEtOWZmOS1kNmMzMDlkMmEwMDMifQ.i37oO7uwd6lmvu55R2r17-ZzaZWPfsu4cGdWevcPhuc"; // <--- Don't forget to paste this!
+    const apiToken = "PASTE_YOUR_STAGING_API_TOKEN_HERE"; // <-- MAKE SURE YOUR TOKEN GOES HERE
     const cameraKit = await bootstrapCameraKit({ apiToken });
 
     liveRenderTarget = document.getElementById("canvas-container");
@@ -18,7 +21,7 @@ async function main() {
 
     session.events.addEventListener('error', (event) => {
         if (event.detail.error.name === 'LensExecutionError') {
-            console.log('The current Lens encountered an error and was removed.', event.detail.error);
+            alert('The current Lens encountered an error and was removed.');
         }
     });
 
@@ -29,14 +32,13 @@ async function main() {
 
     // 2. YOUR LENS AND GROUP IDS
     const lens = await cameraKit.lensRepository.loadLens(
-        '099a8213-4805-4c3e-8ea3-4d8df9c8a136', // Hair Simulation Lens ID
-        'eded281e-2ec8-413d-a0ff-0ea67b107e96'  // EDT-shareCAM Group ID
+        '3e440a7f-88db-4756-a84c-285e4146d485', 
+        '94d68245-abc3-4ba1-a267-74641abfdbe0'  
     );
     
     await session.applyLens(lens);
     session.source.setRenderSize(window.innerWidth, window.innerHeight);
     await session.play();
-    console.log("Lens rendering has started!");
 }
 
 function init() {
@@ -120,11 +122,9 @@ function init() {
             };
 
             if (navigator.canShare && navigator.canShare(shareData)) {
-                navigator.share(shareData)
-                .then(() => console.log('Share was successful.'))
-                .catch((error) => console.log('Sharing failed', error));
+                navigator.share(shareData).catch((error) => console.log('Sharing failed', error));
             } else {
-                console.log("Your system doesn't support sharing files");
+                alert("Your system doesn't support sharing files");
             }
         }
     });
