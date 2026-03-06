@@ -9,7 +9,7 @@ async function main() {
     init();
 
     // 1. YOUR SNAP CREDENTIALS
-    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM3NzEwMDI0LCJzdWIiOiI3OTUxMmFjOS1kNDhkLTRiMWQtYmM1MS04NTU5NTcwYzM4MDZ-U1RBR0lOR344NmM2OGI4ZS1lYTVhLTRiNjUtYjRjZC1hMTYyY2EzZGVkYmUifQ.c4Nz8NrcrZYTr1hJuhy0PeeCiS7Vs7fxRrd4jkctkxw"; // <--- Don't forget to paste this!
+    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM3NzEwMDI0LCJzdWIiOiI3OTUxMmFjOS1kNDhkLTRiMWQtYmM1MS04NTU5NTcwYzM4MDZ-UFJPRFVDVElPTn5lZTFjOTkxYi01NjM4LTQyNDktYmMwNS01ZGNjMDQ0MjM3ODgifQ.YApgqfnpIXzp4FOw9wYK90dwlbbvgR0hdCIdgN8cvgE"; // <--- Don't forget to paste this!
     const cameraKit = await bootstrapCameraKit({ apiToken });
 
     liveRenderTarget = document.getElementById("canvas-container");
