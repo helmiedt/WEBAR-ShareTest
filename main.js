@@ -2,7 +2,7 @@
 window.addEventListener("error", (e) => alert("Script Error: " + e.message));
 window.addEventListener("unhandledrejection", (e) => alert("CameraKit Error: " + (e.reason?.message || e.reason)));
 
-import { bootstrapCameraKit, createMediaStreamSource } from "https://esm.sh/@snap/camera-kit";
+import { bootstrapCameraKit, createMediaStreamSource } from "https://cdn.jsdelivr.net/npm/@snap/camera-kit@latest/dist/index.mjs";
 
 let startButton, stopButton, shareButton, downloadButton, closeBtn;
 let liveRenderTarget, videoContainer;
