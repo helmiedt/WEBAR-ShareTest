@@ -42,59 +42,54 @@
     </div>
 
     <script type="module">
-        import { bootstrapCameraKit } from 'https://cdn.jsdelivr.net/npm/@snap/camera-kit@latest/dist/index.mjs';
+        // 1. ADD ERROR CATCHERS FOR MOBILE
+        // This will pop up an alert on your phone if ANYTHING crashes
+        window.addEventListener("error", function (e) {
+            alert("Script Crash: " + e.message);
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+            alert("Network/Promise Crash: " + e.reason);
+        });
 
-        // ==========================================
-        // 1. CONFIGURATION (Get these from Snap Developer Portal)
-        // ==========================================
-        const API_TOKEN = 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM3NzEwMDI0LCJzdWIiOiI3OTUxMmFjOS1kNDhkLTRiMWQtYmM1MS04NTU5NTcwYzM4MDZ-U1RBR0lOR344NmM2OGI4ZS1lYTVhLTRiNjUtYjRjZC1hMTYyY2EzZGVkYmUifQ.c4Nz8NrcrZYTr1hJuhy0PeeCiS7Vs7fxRrd4jkctkxw'; 
+        // 2. USE A MORE BROWSER-FRIENDLY CDN
+        import { bootstrapCameraKit } from 'https://esm.sh/@snap/camera-kit';
+
+        // 3. YOUR CONFIGURATION
+        const API_TOKEN = 'PASTE_YOUR_STAGING_TOKEN_HERE_AGAIN'; 
         const LENS_GROUP_ID = '94d68245-abc3-4ba1-a267-74641abfdbe0';
         const LENS_ID = '3e440a7f-88db-4756-a84c-285e4146d485';
 
         async function initWebAR() {
             try {
-                // ==========================================
-                // 2. SETUP CAMERA KIT & START CAMERA
-                // ==========================================
                 const cameraKit = await bootstrapCameraKit({ apiToken: API_TOKEN });
                 const session = await cameraKit.createSession();
                 
-                // Camera Kit replaces the initial canvas with its own live output canvas
                 const initialCanvas = document.getElementById('camera-canvas');
                 initialCanvas.replaceWith(session.output.live);
-                const arCanvas = session.output.live; // We will use this to take photos/videos
+                const arCanvas = session.output.live; 
                 
-                // Ensure the new canvas fills the screen cleanly
                 arCanvas.style.width = '100%';
                 arCanvas.style.height = '100%';
                 arCanvas.style.objectFit = 'cover';
 
-                // Request camera permission from the user
+                // Request camera (only video, to avoid mobile audio blocks)
                 const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
                 await session.setSource(mediaStream);
                 await session.play();
 
-                // Load and apply your specific AR Lens
                 const lens = await cameraKit.lensRepository.loadLens(LENS_ID, LENS_GROUP_ID);
                 await session.applyLens(lens);
 
-                // ==========================================
-                // 3. PHOTO (SNAP) LOGIC
-                // ==========================================
+                // Setup Snap Button
                 document.getElementById('snap-btn').addEventListener('click', () => {
-                    // Grab the current frame from the AR canvas
                     const imageUrl = arCanvas.toDataURL('image/jpeg', 1.0);
-                    
-                    // Create a temporary link to trigger a file download
                     const link = document.createElement('a');
                     link.download = 'my-ar-snap.jpg';
                     link.href = imageUrl;
                     link.click();
                 });
 
-                // ==========================================
-                // 4. VIDEO (RECORD) LOGIC
-                // ==========================================
+                // Setup Record Button
                 let recorder;
                 let chunks = [];
                 let isRecording = false;
@@ -102,44 +97,37 @@
 
                 recordBtn.addEventListener('click', () => {
                     if (!isRecording) {
-                        // START RECORDING
-                        const stream = arCanvas.captureStream(30); // 30 FPS
+                        const stream = arCanvas.captureStream(30);
                         recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
                         chunks = [];
-                        
                         recorder.ondataavailable = (e) => chunks.push(e.data);
                         recorder.onstop = () => {
-                            // When recording stops, compile the chunks into a video file
                             const blob = new Blob(chunks, { type: 'video/webm' });
                             const videoUrl = URL.createObjectURL(blob);
-                            
-                            // Trigger download
                             const link = document.createElement('a');
                             link.download = 'my-ar-video.webm';
                             link.href = videoUrl;
                             link.click();
                         };
-
                         recorder.start();
                         isRecording = true;
                         recordBtn.innerText = '🛑 Stop';
-                        recordBtn.classList.add('recording');
+                        recordBtn.style.backgroundColor = '#ff0000';
+                        recordBtn.style.color = '#fff';
                     } else {
-                        // STOP RECORDING
                         recorder.stop();
                         isRecording = false;
                         recordBtn.innerText = '🎥 Record';
-                        recordBtn.classList.remove('recording');
+                        recordBtn.style.backgroundColor = '#fffc00';
+                        recordBtn.style.color = '#000';
                     }
                 });
 
             } catch (error) {
-                console.error("Camera Kit Error:", error);
-                alert("Could not load AR. Check console for details, ensure camera permissions are granted, and verify API tokens.");
+                alert("Camera Kit Error: " + error.message);
             }
         }
 
-        // Start the application
         initWebAR();
     </script>
 </body>
