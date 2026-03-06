@@ -9,7 +9,7 @@ async function main() {
     init();
 
     // 1. YOUR SNAP CREDENTIALS
-    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM3NzEwMDI0LCJzdWIiOiI3OTUxMmFjOS1kNDhkLTRiMWQtYmM1MS04NTU5NTcwYzM4MDZ-UFJPRFVDVElPTn5lZTFjOTkxYi01NjM4LTQyNDktYmMwNS01ZGNjMDQ0MjM3ODgifQ.YApgqfnpIXzp4FOw9wYK90dwlbbvgR0hdCIdgN8cvgE"; // <--- Don't forget to paste this!
+    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzU1NDI4MjMxLCJzdWIiOiI0YWMxZGI1YS02NGIyLTRkNjQtODVkMy0xNTM2ZjFhMzE0NDV-U1RBR0lOR34xZDUyNDhiYy0zZWYxLTRiZTEtOWZmOS1kNmMzMDlkMmEwMDMifQ.i37oO7uwd6lmvu55R2r17-ZzaZWPfsu4cGdWevcPhuc"; // <--- Don't forget to paste this!
     const cameraKit = await bootstrapCameraKit({ apiToken });
 
     liveRenderTarget = document.getElementById("canvas-container");
@@ -29,8 +29,8 @@ async function main() {
 
     // 2. YOUR LENS AND GROUP IDS
     const lens = await cameraKit.lensRepository.loadLens(
-        '3e440a7f-88db-4756-a84c-285e4146d485', // Hair Simulation Lens ID
-        '94d68245-abc3-4ba1-a267-74641abfdbe0'  // EDT-shareCAM Group ID
+        '099a8213-4805-4c3e-8ea3-4d8df9c8a136', // Hair Simulation Lens ID
+        'd3a07442-544b-48d1-861c-7d981ba2e670'  // EDT-shareCAM Group ID
     );
     
     await session.applyLens(lens);
