@@ -2,133 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Custom WebAR Experience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebAR Snapchat Lens</title>
     <style>
-        /* Basic reset to make the camera fill the screen */
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; font-family: sans-serif; }
-        
-        #canvas-container { position: relative; width: 100vw; height: 100vh; }
-        
-        /* The UI layer sits on top of the camera canvas */
-        #ui-layer {
-            position: absolute; bottom: 40px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 20px; z-index: 10;
-        }
-
-        /* Custom Snap and Record Buttons */
-        button {
-            padding: 15px 25px; font-size: 16px; font-weight: bold;
-            border: none; border-radius: 30px; cursor: pointer;
-            background-color: #fffc00; color: #000; /* Snapchat Yellow */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: transform 0.1s;
-        }
-        button:active { transform: scale(0.95); }
-        
-        /* Style for when the recording is active */
-        #record-btn.recording { background-color: #ff0000; color: #fff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        #video-preview-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: none; }
+        #video-preview-container video { width: 100%; height: 100%; object-fit: contain; }
+        .button-container { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 3; gap: 20px; }
+        #playback-controls { position: absolute; bottom: 50px; left: 10px; display: flex; align-items: center; gap: 20px; z-index: 3; }
+        .button-img { cursor: pointer; width: 60px; height: 60px; }
+        #close-btn { position: absolute; top: 10px; right: 10px; z-index: 3; }
     </style>
 </head>
 <body>
+    <div id="canvas-container"></div>
 
-    <div id="canvas-container">
-        <canvas id="camera-canvas"></canvas>
-        
-        <div id="ui-layer">
-            <button id="snap-btn">📸 Snap</button>
-            <button id="record-btn">🎥 Record</button>
+    <div id="video-preview-container">
+        <div id="playback-controls">
+            <img id="share-btn" class="button-img" src="./share-button.png" alt="Share">
+            <img id="download-btn" class="button-img" src="./download-button.png" alt="Download">
         </div>
+        <img id="close-btn" class="button-img" src="./x-button.png" alt="Close Preview">
     </div>
 
-    <script type="module">
-        // 1. ADD ERROR CATCHERS FOR MOBILE
-        // This will pop up an alert on your phone if ANYTHING crashes
-        window.addEventListener("error", function (e) {
-            alert("Script Crash: " + e.message);
-        });
-        window.addEventListener("unhandledrejection", function (e) {
-            alert("Network/Promise Crash: " + e.reason);
-        });
+    <div id="record-controls" class="button-container">
+        <img id="start-btn" class="button-img" src="./start-button.png" alt="Start Recording">
+        <img id="stop-btn" class="button-img" src="./stop-button.png" alt="Stop Recording" style="display: none;">
+    </div>
 
-        // 2. USE A MORE BROWSER-FRIENDLY CDN
-        import { bootstrapCameraKit } from 'https://esm.sh/@snap/camera-kit';
-
-        // 3. YOUR CONFIGURATION
-        const API_TOKEN = 'PASTE_YOUR_STAGING_TOKEN_HERE_AGAIN'; 
-        const LENS_GROUP_ID = '94d68245-abc3-4ba1-a267-74641abfdbe0';
-        const LENS_ID = '3e440a7f-88db-4756-a84c-285e4146d485';
-
-        async function initWebAR() {
-            try {
-                const cameraKit = await bootstrapCameraKit({ apiToken: API_TOKEN });
-                const session = await cameraKit.createSession();
-                
-                const initialCanvas = document.getElementById('camera-canvas');
-                initialCanvas.replaceWith(session.output.live);
-                const arCanvas = session.output.live; 
-                
-                arCanvas.style.width = '100%';
-                arCanvas.style.height = '100%';
-                arCanvas.style.objectFit = 'cover';
-
-                // Request camera (only video, to avoid mobile audio blocks)
-                const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                await session.setSource(mediaStream);
-                await session.play();
-
-                const lens = await cameraKit.lensRepository.loadLens(LENS_ID, LENS_GROUP_ID);
-                await session.applyLens(lens);
-
-                // Setup Snap Button
-                document.getElementById('snap-btn').addEventListener('click', () => {
-                    const imageUrl = arCanvas.toDataURL('image/jpeg', 1.0);
-                    const link = document.createElement('a');
-                    link.download = 'my-ar-snap.jpg';
-                    link.href = imageUrl;
-                    link.click();
-                });
-
-                // Setup Record Button
-                let recorder;
-                let chunks = [];
-                let isRecording = false;
-                const recordBtn = document.getElementById('record-btn');
-
-                recordBtn.addEventListener('click', () => {
-                    if (!isRecording) {
-                        const stream = arCanvas.captureStream(30);
-                        recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-                        chunks = [];
-                        recorder.ondataavailable = (e) => chunks.push(e.data);
-                        recorder.onstop = () => {
-                            const blob = new Blob(chunks, { type: 'video/webm' });
-                            const videoUrl = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.download = 'my-ar-video.webm';
-                            link.href = videoUrl;
-                            link.click();
-                        };
-                        recorder.start();
-                        isRecording = true;
-                        recordBtn.innerText = '🛑 Stop';
-                        recordBtn.style.backgroundColor = '#ff0000';
-                        recordBtn.style.color = '#fff';
-                    } else {
-                        recorder.stop();
-                        isRecording = false;
-                        recordBtn.innerText = '🎥 Record';
-                        recordBtn.style.backgroundColor = '#fffc00';
-                        recordBtn.style.color = '#000';
-                    }
-                });
-
-            } catch (error) {
-                alert("Camera Kit Error: " + error.message);
-            }
-        }
-
-        initWebAR();
-    </script>
+    <script type="module" src="./main.js"></script>
 </body>
 </html>
