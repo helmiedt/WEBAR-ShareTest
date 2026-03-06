@@ -12,7 +12,7 @@ async function main() {
     init();
 
     // 1. YOUR SNAP CREDENTIALS
-    const apiToken = "PASTE_YOUR_STAGING_API_TOKEN_HERE"; // <-- MAKE SURE YOUR TOKEN GOES HERE
+    const apiToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM3NzEwMDI0LCJzdWIiOiI3OTUxMmFjOS1kNDhkLTRiMWQtYmM1MS04NTU5NTcwYzM4MDZ-U1RBR0lOR344NmM2OGI4ZS1lYTVhLTRiNjUtYjRjZC1hMTYyY2EzZGVkYmUifQ.c4Nz8NrcrZYTr1hJuhy0PeeCiS7Vs7fxRrd4jkctkxw"; // <-- MAKE SURE YOUR TOKEN GOES HERE
     const cameraKit = await bootstrapCameraKit({ apiToken });
 
     liveRenderTarget = document.getElementById("canvas-container");
