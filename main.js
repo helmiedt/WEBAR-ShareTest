@@ -30,7 +30,7 @@ async function main() {
     // 2. YOUR LENS AND GROUP IDS
     const lens = await cameraKit.lensRepository.loadLens(
         '099a8213-4805-4c3e-8ea3-4d8df9c8a136', // Hair Simulation Lens ID
-        'd3a07442-544b-48d1-861c-7d981ba2e670'  // EDT-shareCAM Group ID
+        'eded281e-2ec8-413d-a0ff-0ea67b107e96'  // EDT-shareCAM Group ID
     );
     
     await session.applyLens(lens);
